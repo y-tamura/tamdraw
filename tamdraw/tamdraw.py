@@ -1,4 +1,4 @@
-# 
+
 import xarray as xr
 import numpy as np
 import matplotlib as mpl
@@ -268,7 +268,7 @@ def axplot_hrz_field_hatch(ax,field,field_hatch,
                    grid=False,grid_width=1.,hatches=[".."],echatch="black",
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",):
+                   landcol=True,landfc="lightgray",):
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
