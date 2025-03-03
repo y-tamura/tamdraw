@@ -81,7 +81,7 @@ def draw_hrz_field(field,
                    contour=False,grid=False,grid_width=1.,
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",
+                   landcol=True,landfc="lightgray",
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -173,7 +173,7 @@ def axplot_hrz_field(ax,field,
                    grid=False,grid_width=1.,
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",):
+                   landcol=True,landfc="lightgray",):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
     var_label : string       , discripsion of the variable
@@ -357,7 +357,7 @@ def axplot_polar_field_hatch(ax,field,field_hatch,
                    grid=False,grid_width=1.,hatches=[".."],echatch="black",
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",):
+                   landcol=True,landfc="lightgray",):
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
@@ -450,7 +450,7 @@ def axplot_hrz_field_double(ax,field1, field2,
                    sub_contour=False,
                    fmt='%.1f',
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",zland=5,zcontour=6.2,):
+                   landcol=True,landfc="lightgray",zland=5,zcontour=6.2,):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
     var_label : string       , discripsion of the variable
@@ -590,7 +590,7 @@ def axplot_hrz_field_contour(ax,field,
                    sub_contour=False,
                    fmt='%.1f',
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",zland=5,zcontour=6.2,):
+                   landcol=True,landfc="lightgray",zland=5,zcontour=6.2,):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
     var_label : string       , discripsion of the variable
@@ -701,7 +701,7 @@ def axplot_hrz_field_double_hatch(ax,field1, field2, field_hatch,
                    sub_contour=False,hatches=[".."],echatch="black",
                    fmt='%.1f',
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",zland=5,zcontour=6.2,):
+                   landcol=True,landfc="lightgray",zland=5,zcontour=6.2,):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
     var_label : string       , discripsion of the variable
@@ -843,7 +843,7 @@ def axplot_polar_field_double_hatch(ax,field1, field2, field_hatch,
                    sub_contour=False,hatches=[".."],echatch="black",
                    fmt='%.1f',
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",cland='lightgray',zland=5,zcontour=6.2,):
+                   landcol=True,landfc="lightgray",cland='lightgray',zland=5,zcontour=6.2,):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
     var_label : string       , discripsion of the variable
@@ -978,7 +978,7 @@ def axplot_whitemap(ax,x_min=120,x_max=260,y_min=-20,y_max=70,
                    xtickint=20,ytickint=10,
                    title="",grid=False,grid_width=1.,zrec=10,zland=1,
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",):
+                   landcol=True,landfc="lightgray",):
    
     # subarc/subtro front領域を四角形で囲う
     if rec:
@@ -1325,7 +1325,7 @@ def draw_hrz_field_double(field1, field2,
                    sub_contour=False,
                    fmt='%.1f',
                    rec=False,xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",zorder_land=5,z_contour=6.2,
+                   landcol=True,landfc="lightgray",zorder_land=5,z_contour=6.2,
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -1464,7 +1464,7 @@ def draw_hrz_field_double_hatch(field1,field2,field_hatch,tc_val,
                    rec=False,
                    xy=None,width=None,height=None,
                    fmt='%.1f',
-                   landcol=True,landfc="beige",z_land=3,z_contour=4,z_hatch=2,
+                   landcol=True,landfc="lightgray",z_land=3,z_contour=4,z_hatch=2,
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -1609,7 +1609,7 @@ def draw_hrz_field_double_hatch_hrz(field1,field2,field_hatch,tcval_da,
                    rec=False,
                    xy=None,width=None,height=None,
                    fmt='%.1f',
-                   landcol=True,landfc="beige",z_land=3,z_contour=4,z_hatch=2,
+                   landcol=True,landfc="lightgray",z_land=3,z_contour=4,z_hatch=2,
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -1751,7 +1751,7 @@ def draw_hrz_field_contour(field,
                    var_label="",title="",
                    contourwidth=0.5,
                    subarc=False,subtro=False,
-                   landcol=True,landfc="beige",z_land=4.9,
+                   landcol=True,landfc="lightgray",z_land=4.9,
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -1857,7 +1857,7 @@ def draw_hrz_field_hatch(field,field_hatch,tc_val,
                    contour=False,
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",
+                   landcol=True,landfc="lightgray",
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -1957,7 +1957,7 @@ def draw_hrz_field_hatch_hrz(field,field_hatch,tcval_da,
                    rec=False,
                    xy=None,width=None,height=None,
                    fmt='%.1f',
-                   landcol=True,landfc="beige",z_land=3,z_contour=4,z_hatch=2,
+                   landcol=True,landfc="lightgray",z_land=3,z_contour=4,z_hatch=2,
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
@@ -2059,7 +2059,7 @@ def draw_hrz_field_contour_hatch(field,field_hatch,tc_val,
                    var_label="",title="",
                    rec=False,
                    xy=None,width=None,height=None,
-                   landcol=True,landfc="beige",
+                   landcol=True,landfc="lightgray",
                    savefig=False,fname_save=None):
     """
     field     : xr.DataArray , 2-dims. horizontal data array
