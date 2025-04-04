@@ -12,6 +12,7 @@ import cartopy.crs as ccrs
 from   cartopy.mpl.ticker import LongitudeFormatter,LatitudeFormatter
 from scipy import stats
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.colors as mcolors
 # 
 def plot_lagcorr(x, y, title, xlabel='Lag[mon]', ylabel='Correlation',
                  fsize_label=18, fsize_title=28, fsize_tick=14,
@@ -2256,3 +2257,28 @@ def cmaps_ipcc(cmname='slev_div'):
     import matplotlib.colors as mcolors
     cmap_txt = np.loadtxt(f'/Users/tamurayukito/ANALYSIS/Data/colormaps-master/continuous_colormaps_rgb_0-1/{cmname}.txt')
     return mcolors.LinearSegmentedColormap.from_list('colormap',cmap_txt)
+
+def cmap_centwhite(cmap, center_fraction=0.1):
+    """
+    Modify a given colormap by making the central `center_fraction` portion white.
+
+    Parameters:
+    - cmap_name: str, name of the original colormap
+    - center_fraction: float, fraction of colormap to turn white (default 0.1)
+
+    Returns:
+    - new_cmap: matplotlib.colors.ListedColormap, modified colormap
+    """
+    # cmap = cm.get_cmap(cmap_name, 256)  # Get the colormap
+    colors = cmap(np.linspace(0, 1, 256))  # Convert to RGBA values
+    
+    # Determine the indices for the central region
+    center_start = int(0.5 * 256 - (center_fraction / 2) * 256)
+    center_end = int(0.5 * 256 + (center_fraction / 2) * 256)
+
+    # Set the central region to white
+    colors[center_start:center_end] = [1, 1, 1, 1]  # RGBA for white
+
+    # Create a new colormap
+    new_cmap = mcolors.ListedColormap(colors)
+    return new_cmap
