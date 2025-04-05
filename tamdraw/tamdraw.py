@@ -2253,9 +2253,12 @@ def cmap_white_in_mid(cmap,wmin=0.45,wmax=0.55):
     colors = [(cmap_obj(i)) if (i < wmin or i > wmax) else (1, 1, 1, 1) for i in np.linspace(0, 1, 256)]
     custom_cmap = LinearSegmentedColormap.from_list('custom_RdBu_r', colors)
 
+import os
+current_dir=os.path.dirname(os.path.abspath(__file__))
+cmap_master_dir_path=os.path.join(current_dir,"..",'colormaps-master')
 def cmaps_ipcc(cmname='slev_div'):
     import matplotlib.colors as mcolors
-    cmap_txt = np.loadtxt(f'/Users/tamurayukito/ANALYSIS/Data/colormaps-master/continuous_colormaps_rgb_0-1/{cmname}.txt')
+    cmap_txt = np.loadtxt(f'{cmap_master_dir_path}/continuous_colormaps_rgb_0-1/{cmname}.txt')
     return mcolors.LinearSegmentedColormap.from_list('colormap',cmap_txt)
 
 def cmap_centwhite(cmap, center_fraction=0.1):
