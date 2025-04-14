@@ -151,11 +151,7 @@ def draw_hrz_field(field,
     # 海岸線とグリッドラインの描画
     ax.coastlines(resolution="50m",linewidth=0.5,zorder=3)
     if grid:
-        ax.gridlines(crs=ccrs.PlateCarree(),
-                     linestyle="--",linewidth=grid_width,
-                     draw_labels=False,
-                     alpha=0.8,
-                     zorder=10)
+        ax.grid(linestyle="--",linewidth=grid_width,alpha=1,zorder=10)
     #大陸部分の塗りつぶし
     if landcol:
         import cartopy.feature as cfea
@@ -248,11 +244,7 @@ def axplot_hrz_field(ax,field,
     # 海岸線とグリッドラインの描画
     ax.coastlines(resolution="50m",linewidth=0.5,zorder=3)
     if grid:
-        ax.gridlines(crs=ccrs.PlateCarree(),
-                     linestyle="--",linewidth=grid_width,
-                     draw_labels=False,
-                     alpha=0.8,
-                     zorder=10)
+        ax.grid(linestyle="--",linewidth=grid_width,alpha=1,zorder=10)
     #大陸部分の塗りつぶし
     if landcol:
         import cartopy.feature as cfea
@@ -339,11 +331,7 @@ def axplot_hrz_field_hatch(ax,field,field_hatch,
     # 海岸線とグリッドラインの描画
     ax.coastlines(resolution="50m",linewidth=0.5,zorder=3)
     if grid:
-        ax.gridlines(crs=ccrs.PlateCarree(),
-                     linestyle="--",linewidth=grid_width,
-                     draw_labels=False,
-                     alpha=0.8,
-                     zorder=10)
+        ax.grid(linestyle="--",linewidth=grid_width,alpha=1,zorder=10)
     #大陸部分の塗りつぶし
     if landcol:
         import cartopy.feature as cfea
@@ -428,11 +416,7 @@ def axplot_polar_field_hatch(ax,field,field_hatch,
     # 海岸線とグリッドラインの描画
     ax.coastlines(resolution="50m",linewidth=0.5,zorder=3)
     if grid:
-        ax.gridlines(crs=ccrs.PlateCarree(),
-                     linestyle="--",linewidth=grid_width,
-                     draw_labels=False,
-                     alpha=0.8,
-                     zorder=10)
+        ax.grid(linestyle="--",linewidth=grid_width,alpha=1,zorder=10)
     #大陸部分の塗りつぶし
     if landcol:
         import cartopy.feature as cfea
