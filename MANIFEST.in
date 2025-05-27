@@ -1,1 +1,1 @@
-recursive-include mypackage/colormaps-master *.txt
+recursive-include tamdraw/colormaps-master *.txt
