@@ -2239,7 +2239,7 @@ def cmap_white_in_mid(cmap,wmin=0.45,wmax=0.55):
 
 import os
 current_dir=os.path.dirname(os.path.abspath(__file__))
-cmap_master_dir_path=os.path.join(current_dir,"..",'colormaps-master')
+cmap_master_dir_path=os.path.join(current_dir,'colormaps-master')
 def cmaps_ipcc(cmname='slev_div'):
     import matplotlib.colors as mcolors
     cmap_txt = np.loadtxt(f'{cmap_master_dir_path}/continuous_colormaps_rgb_0-1/{cmname}.txt')
