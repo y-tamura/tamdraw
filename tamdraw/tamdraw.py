@@ -99,7 +99,7 @@ def draw_hrz_field(field,
 
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -182,7 +182,7 @@ def axplot_hrz_field(ax,field,
 
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -265,7 +265,7 @@ def axplot_hrz_field_hatch(ax,field,field_hatch,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -350,7 +350,7 @@ def axplot_polar_field_hatch(ax,field,field_hatch,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -447,7 +447,7 @@ def axplot_hrz_field_double(ax,field1, field2,
 
     # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -698,7 +698,7 @@ def axplot_hrz_field_double_hatch(ax,field1, field2, field_hatch,
 
     # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -840,7 +840,7 @@ def axplot_polar_field_double_hatch(ax,field1, field2, field_hatch,
 
     # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -1052,7 +1052,7 @@ def plot_laghovmuller(ax,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -1113,7 +1113,7 @@ def plot_hovmuller_double(ax,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -1182,7 +1182,7 @@ def plot_hovmuller_hatch(ax,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -1247,7 +1247,7 @@ def plot_hovmuller_double_hatch(ax,
     
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -1331,7 +1331,7 @@ def draw_hrz_field_double(field1, field2,
 
     # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -1470,7 +1470,7 @@ def draw_hrz_field_double_hatch(field1,field2,field_hatch,tc_val,
 
    # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -1615,7 +1615,7 @@ def draw_hrz_field_double_hatch_hrz(field1,field2,field_hatch,tcval_da,
 
    # カラーバーの範囲の指定
     if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1)
+        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
         cticks1 = None
     elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
         nlev = 12
@@ -1757,7 +1757,7 @@ def draw_hrz_field_contour(field,
 
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
     elif (clev_min,clev_max,clev_int)==(None,None,None):
         clevels = 19 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
     else:
@@ -1863,7 +1863,7 @@ def draw_hrz_field_hatch(field,field_hatch,tc_val,
 
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -1963,7 +1963,7 @@ def draw_hrz_field_hatch_hrz(field,field_hatch,tcval_da,
 
    # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
         cticks = None
     elif clev_min is not None and clev_max is not None and clev_int == None:
         nlev = 12
@@ -2065,7 +2065,7 @@ def draw_hrz_field_contour_hatch(field,field_hatch,tc_val,
 
     # カラーバーの範囲の指定
     if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int)
+        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
     elif (clev_min,clev_max,clev_int)==(None,None,None):
         clevels = 19 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
     else:
