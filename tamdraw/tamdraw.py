@@ -13,6 +13,44 @@ from   cartopy.mpl.ticker import LongitudeFormatter,LatitudeFormatter
 from scipy import stats
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.colors as mcolors
+
+
+def _label_contours(ax, contour, **kwargs):
+    """Add contour labels with minimal whitespace around each label."""
+    texts = ax.clabel(contour, **kwargs)
+    for text in texts:
+        text.set_bbox(dict(facecolor="none", edgecolor="none", pad=0.05))
+    return texts
+
+
+def _color_levels(level_min, level_max, level_interval, default=9):
+    """Return filled-contour levels and colorbar ticks."""
+    if all(value is not None for value in (level_min, level_max, level_interval)):
+        return np.arange(level_min, level_max + level_interval / 2, level_interval, dtype=np.float32), None
+    if level_min is not None and level_max is not None and level_interval is None:
+        levels = np.linspace(level_min, level_max, 12)
+        return levels, list(levels[:6:2]) + list(levels[7::2])
+    if (level_min, level_max, level_interval) == (None, None, None):
+        return default, None
+    raise ValueError("Color level min/max/interval is not correct.")
+
+
+def _contour_levels(level_min, level_max, level_interval, default=9):
+    """Return line-contour levels."""
+    if all(value is not None for value in (level_min, level_max, level_interval)):
+        return np.arange(level_min, level_max + level_interval, level_interval)
+    if (level_min, level_max, level_interval) == (None, None, None):
+        return default
+    raise ValueError("Contour level min/max/interval is not correct.")
+
+
+def _subcontour_levels(level_min, level_max, level_interval, default=9):
+    """Return minor contour levels at one-fifth of the main interval."""
+    if level_interval is None:
+        return default
+    return _contour_levels(level_min, level_max, level_interval / 5, default)
+
+
 # 
 def plot_lagcorr(x, y, title, xlabel='Lag[mon]', ylabel='Correlation',
                  fsize_label=18, fsize_title=28, fsize_tick=14,
@@ -97,19 +135,7 @@ def draw_hrz_field(field,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
 
     # Plot
     field.plot.contourf(
@@ -180,19 +206,7 @@ def axplot_hrz_field(ax,field,
     2つの軸の名前が("lon","lat")になっていることを想定しています。
     """
 
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
 
    # Plot
     if add_colorbar:
@@ -263,19 +277,7 @@ def axplot_hrz_field_hatch(ax,field,field_hatch,
                    xy=None,width=None,height=None,
                    landcol=True,landfc="lightgray",):
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
 
    # Plot
     if add_colorbar:
@@ -348,19 +350,7 @@ def axplot_polar_field_hatch(ax,field,field_hatch,
                    xy=None,width=None,height=None,
                    landcol=True,landfc="lightgray",):
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
 
    # Plot
     if add_colorbar:
@@ -445,34 +435,9 @@ def axplot_hrz_field_double(ax,field1, field2,
     2つの軸の名前が("lon","lat")になっていることを想定しています。
     """
 
-    # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     if add_colorbar:
         c=field1.plot.contourf(
@@ -505,8 +470,8 @@ def axplot_hrz_field_double(ax,field1, field2,
     )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=clabelsize,inline_spacing=inline_spacing,
             colors=cclabel,
@@ -585,21 +550,8 @@ def axplot_hrz_field_contour(ax,field,
     2つの軸の名前が("lon","lat")になっていることを想定しています。
     """
 
-    # fieldのコンターレベルの指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int,clev_int)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # fieldの副コンター、細い線
-    clev_int_sub = clev_int/5
-    if clev_min is not None and clev_max is not None and clev_int_sub is not None:
-        clevels_sub = np.arange(clev_min,clev_max+clev_int_sub,clev_int_sub)
-    elif (clev_min,clev_max,clev_int_sub)==(None,None,None):
-        clevels_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels = _contour_levels(clev_min, clev_max, clev_int)
+    clevels_sub = _subcontour_levels(clev_min, clev_max, clev_int)
     
     # fieldはコンター
     contour = field.plot.contour(
@@ -612,8 +564,8 @@ def axplot_hrz_field_contour(ax,field,
     )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=clabelsize,inline_spacing=inline_spacing,
             colors=cclabel,
@@ -696,34 +648,9 @@ def axplot_hrz_field_double_hatch(ax,field1, field2, field_hatch,
     2つの軸の名前が("lon","lat")になっていることを想定しています。
     """
 
-    # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     if add_colorbar:
         c=field1.plot.contourf(
@@ -756,8 +683,8 @@ def axplot_hrz_field_double_hatch(ax,field1, field2, field_hatch,
     )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=clabelsize,inline_spacing=inline_spacing,
             colors=cclabel,
@@ -838,34 +765,9 @@ def axplot_polar_field_double_hatch(ax,field1, field2, field_hatch,
     2つの軸の名前が("lon","lat")になっていることを想定しています。
     """
 
-    # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     if add_colorbar:
         c=field1.plot.contourf(
@@ -898,8 +800,8 @@ def axplot_polar_field_double_hatch(ax,field1, field2, field_hatch,
     )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=clabelsize,inline_spacing=inline_spacing,
             colors=cclabel,
@@ -1050,19 +952,7 @@ def plot_laghovmuller(ax,
     
     da = var.sel(lag=slice(lagmin,lagmax))
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
     
     cf = ax.contourf(da[lon].values, da[lag].values, da.values,
                 levels=clevels, cmap=cmap, extend='both'
@@ -1111,26 +1001,8 @@ def plot_hovmuller_double(ax,
     da1 = var1.sel(lag=slice(lagmin,lagmax))
     da2 = var2.sel(lag=slice(lagmin,lagmax))
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
     
     cf = ax.contourf(da1[lon].values, da1[lag].values, da1.values,
                 levels=clevels, cmap=cmap, extend='both'
@@ -1144,8 +1016,8 @@ def plot_hovmuller_double(ax,
                linewidth=contourwidth,colors='dimgray',
                alpha=0.7)
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             colors='black',
         )
@@ -1180,19 +1052,7 @@ def plot_hovmuller_hatch(ax,
     import cartopy.crs as ccrs
     from   cartopy.mpl.ticker import LongitudeFormatter,LatitudeFormatter
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
     
     cf = ax.contourf(var1[lon].values, var1[lag].values, var1.values,
                 levels=clevels, cmap=cmap, extend='both'
@@ -1245,26 +1105,8 @@ def plot_hovmuller_double_hatch(ax,
     da2 = var2.sel(lag=slice(lagmin,lagmax))
     dat = vart.sel(lag=slice(lagmin,lagmax))
     
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
     
     cf = ax.contourf(da1[lon].values, da1[lag].values, da1.values,
                 levels=clevels, cmap=cmap, extend='both'
@@ -1287,8 +1129,8 @@ def plot_hovmuller_double_hatch(ax,
                 )
     
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             colors='black',
         )
@@ -1329,34 +1171,9 @@ def draw_hrz_field_double(field1, field2,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-    # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     # field1は塗りつぶし
     # field2はコンター
@@ -1380,8 +1197,8 @@ def draw_hrz_field_double(field1, field2,
     )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=6,
             colors='black',
@@ -1468,34 +1285,9 @@ def draw_hrz_field_double_hatch(field1,field2,field_hatch,tc_val,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-   # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     # field1は塗りつぶし
     # field2はコンター
@@ -1527,8 +1319,8 @@ def draw_hrz_field_double_hatch(field1,field2,field_hatch,tc_val,
                 )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=6,
             colors='black',
@@ -1613,34 +1405,9 @@ def draw_hrz_field_double_hatch_hrz(field1,field2,field_hatch,tcval_da,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-   # カラーバーの範囲の指定
-    if clev_min1 is not None and clev_max1 is not None and clev_int1 is not None:
-        clevels1 = np.arange(clev_min1,clev_max1+clev_int1/2,clev_int1,dtype=np.float32)
-        cticks1 = None
-    elif clev_min1 is not None and clev_max1 is not None and clev_int1 == None:
-        nlev = 12
-        clevels1 = np.linspace(clev_min1,clev_max1,nlev)
-        cticks1 = list(clevels1[:nlev//2:2])+list(clevels1[nlev//2+1::2])
-    elif (clev_min1,clev_max1,clev_int1)==(None,None,None):
-        clevels1 = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks1 = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
-    # field2のコンターレベルの指定
-    if clev_min2 is not None and clev_max2 is not None and clev_int2 is not None:
-        clevels2 = np.arange(clev_min2,clev_max2+clev_int2,clev_int2)
-    elif (clev_min2,clev_max2,clev_int2)==(None,None,None):
-        clevels2 = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
-    # field2の副コンター、細い線
-    clev_int2_sub = clev_int2/5
-    if clev_min2 is not None and clev_max2 is not None and clev_int2_sub is not None:
-        clevels2_sub = np.arange(clev_min2,clev_max2+clev_int2_sub,clev_int2_sub)
-    elif (clev_min2,clev_max2,clev_int2_sub)==(None,None,None):
-        clevels2_sub = 9 
-    else:
-        raise Exception("Contour level max/min/int is not correct!")
+    clevels1, cticks1 = _color_levels(clev_min1, clev_max1, clev_int1)
+    clevels2 = _contour_levels(clev_min2, clev_max2, clev_int2)
+    clevels2_sub = _subcontour_levels(clev_min2, clev_max2, clev_int2)
     # Plot
     # field1は塗りつぶし
     # field2はコンター
@@ -1674,8 +1441,8 @@ def draw_hrz_field_double_hatch_hrz(field1,field2,field_hatch,tcval_da,
                       )
     # コンターのラベルの作成
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=6,
             colors='black',
@@ -1755,13 +1522,7 @@ def draw_hrz_field_contour(field,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 19 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels = _contour_levels(clev_min, clev_max, clev_int, default=19)
     ## region
     ax.set_extent([x_min,x_max,y_min,y_max],crs=ccrs.PlateCarree())
     # contour
@@ -1775,8 +1536,8 @@ def draw_hrz_field_contour(field,
         zorder=5
     )
     # コンターのラベルの作成
-    ax.clabel(
-        plot,
+    _label_contours(
+        ax, plot,
         fmt=fmt,
         fontsize=6,
         colors='black',
@@ -1861,19 +1622,7 @@ def draw_hrz_field_hatch(field,field_hatch,tc_val,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])#np.linspace(clev_min,clev_max,7)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
     # Plot
     field.plot.contourf(
         ax=ax,
@@ -1961,19 +1710,7 @@ def draw_hrz_field_hatch_hrz(field,field_hatch,tcval_da,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-   # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-        cticks = None
-    elif clev_min is not None and clev_max is not None and clev_int == None:
-        nlev = 12
-        clevels = np.linspace(clev_min,clev_max,nlev)
-        cticks = list(clevels[:nlev//2:2])+list(clevels[nlev//2+1::2])
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 9 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-        cticks = None
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels, cticks = _color_levels(clev_min, clev_max, clev_int)
 
     # Plot
     # fieldは塗りつぶし
@@ -2063,13 +1800,7 @@ def draw_hrz_field_contour_hatch(field,field_hatch,tc_val,
     fig = plt.figure(figsize=(6,4),dpi=150,layout='constrained') # 図のサイズと解像度を指定
     ax = fig.add_subplot(projection=ccrs.PlateCarree(central_longitude=180)) # cartopyのprojectionを指定したAxesオブジェクトを生成
 
-    # カラーバーの範囲の指定
-    if clev_min is not None and clev_max is not None and clev_int is not None:
-        clevels = np.arange(clev_min,clev_max+clev_int/2,clev_int,dtype=np.float32)
-    elif (clev_min,clev_max,clev_int)==(None,None,None):
-        clevels = 19 # カラーバーを特に指定しなければ，9つのレベルに分かれて色付けをする
-    else:
-        raise Exception("Color level max/min/int is not correct!")
+    clevels = _contour_levels(clev_min, clev_max, clev_int, default=19)
     ## region
     ax.set_extent([x_min,x_max,y_min,y_max],crs=ccrs.PlateCarree())
     # contour
@@ -2083,8 +1814,8 @@ def draw_hrz_field_contour_hatch(field,field_hatch,tc_val,
         zorder=5
     )
     # コンターのラベルの作成
-    ax.clabel(
-        plot,
+    _label_contours(
+        ax, plot,
         fmt=fmt,
         fontsize=6,
         colors='black',
@@ -2172,8 +1903,8 @@ def plot_contour(ax,x,y,var,
                     levels=clevels,linewidths=linewidths,
                     colors=colors)
     if clabel:
-        ax.clabel(
-            contour,
+        _label_contours(
+            ax, contour,
             fmt=fmt,
             fontsize=6,
             colors='black',
